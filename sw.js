@@ -1,10 +1,10 @@
 'use strict';
 // Keep caches isolated from other GitHub Pages projects on the same origin.
 const PREFIX = `contador-questoes:${self.registration.scope}:`;
-const CACHE = `${PREFIX}v1`;
-const ASSETS = ['./', './index.html', './styles.css', './counter.js', './app.js', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
+const CACHE = `${PREFIX}v2`;
+const ASSETS = ['./', './index.html', './styles.css', './counter.js', './app.js?v=2', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {
   event.waitUntil(caches.keys().then(keys => Promise.all(
@@ -21,3 +21,4 @@ self.addEventListener('fetch', event => {
     event.respondWith(caches.open(CACHE).then(async cache => (await cache.match(request)) || fetch(request)));
   }
 });
+

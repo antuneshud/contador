@@ -36,10 +36,11 @@ document.addEventListener('keydown', event => {
 });
 render();
 if ('serviceWorker' in navigator && window.isSecureContext) {
-  navigator.serviceWorker.register('./sw.js').then(async registration => {
-    await navigator.serviceWorker.ready;
-    byId('offline-note').textContent = 'Pronto para usar também sem internet.';
-  }).catch(() => {
-    byId('offline-note').textContent = 'Modo offline indisponível. Você pode continuar usando online.';
+  // Activate updates without showing installation or connection notices.
+  const alreadyControlled = Boolean(navigator.serviceWorker.controller);
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (alreadyControlled && !refreshing) { refreshing = true; window.location.reload(); }
   });
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});
 }
